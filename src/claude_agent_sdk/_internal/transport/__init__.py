@@ -65,4 +65,6 @@ class Transport(ABC):
         pass
 
 
-__all__ = ["Transport"]
+from .litellm import LiteLLMTransport
+
+__all__ = ["Transport", "LiteLLMTransport"]

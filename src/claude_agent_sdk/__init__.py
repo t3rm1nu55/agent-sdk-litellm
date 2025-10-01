@@ -14,6 +14,7 @@ from ._errors import (
 from ._internal.transport import Transport
 from ._version import __version__
 from .client import ClaudeSDKClient
+from .litellm_query import litellm_query
 from .query import query
 from .types import (
     AgentDefinition,
@@ -280,6 +281,7 @@ def create_sdk_mcp_server(
 __all__ = [
     # Main exports
     "query",
+    "litellm_query",
     "__version__",
     # Transport
     "Transport",
