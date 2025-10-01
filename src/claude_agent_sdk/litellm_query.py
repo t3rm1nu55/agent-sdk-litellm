@@ -78,8 +78,8 @@ async def litellm_query(
             # Convert to SDK message format
             if message.get("type") == "assistant":
                 yield AssistantMessage(
-                    type="assistant",
-                    content=message.get("content", [])
+                    content=message.get("content", []),
+                    model="litellm"
                 )
     finally:
         await transport.close()
