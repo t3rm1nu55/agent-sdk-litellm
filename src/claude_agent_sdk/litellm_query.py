@@ -4,9 +4,9 @@ This module provides a drop-in replacement for the standard query() function
 that uses LiteLLM instead of Claude Code CLI.
 """
 
+import json
 from collections.abc import AsyncIterator
 
-from ._internal.query import Query
 from ._internal.transport.litellm import LiteLLMTransport
 from .types import (
     AssistantMessage,
@@ -65,18 +65,24 @@ async def litellm_query(
         model=model,
     )
 
-    # Use the standard Query class with our custom transport
-    query_instance = Query(
-        prompt=prompt,
-        options=options,
-        transport=transport,
-    )
-
     try:
-        async for message in query_instance.stream():
-            yield message
+        # Connect transport
+        await transport.connect()
+
+        # Send the prompt
+        await transport.write(json.dumps({"content": prompt}))
+        await transport.end_input()
+
+        # Read messages
+        async for message in transport.read_messages():
+            # Convert to SDK message format
+            if message.get("type") == "assistant":
+                yield AssistantMessage(
+                    type="assistant",
+                    content=message.get("content", [])
+                )
     finally:
-        await query_instance.close()
+        await transport.close()
 
 
 __all__ = ["litellm_query"]
